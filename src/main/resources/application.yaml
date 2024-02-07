@@ -6,3 +6,20 @@ spring:
     port: 5672
     username: guest
     password: 123456
+#    发送者开启 confirm 确认机制
+    publisher-confirm-type: correlated
+#    发送者开启 return 确认机制
+    publisher-returns: true
+#    开启消息路由失败时的策略.turn,则调用ReturnCallback; false:直接丢弃数据
+    template:
+      mandatory: true
+    listener:
+      simple:
+        #ack 自动ack确认:auto   手动ack确认:manual
+        acknowledge-mode: auto
+        retry:
+          enabled: true # 开启消费者失败重试
+          initial-interval: 1000 # 初始的失败等待时长为1秒
+          multiplier: 1 # 失败的等待时长倍数，下次等待时长 = multiplier * last-interval
+          max-attempts: 3 # 最大重试次数 到达最大重试次数会自动进入死信队列，前提是未开启ack手动确认
+          stateless: false # true无状态；false有状态。如果业务中包含事务，这里改为false
